@@ -1,0 +1,61 @@
+Petre Daniel Marian
+335 CA
+
+parallel snake - tema 1 APD
+
+Implementarea:
+
+Singurele implementari sunt cele gasite in parallel_snake.c:
+
+getPos: functia primeste ca parametrii 2 coordonate de start, marginile hartii si o directie. In functie 
+de directia data, N, E, V, S, functia returneaza un set nou de coordonate ce modifica coordonatele de 
+start.
+
+getTail: functia primeste ca parametrii marginile hartii, matricea pe care o sa se caute coada, 
+coordonatele de la care se incepe cautarea si codificarea sarpelui. Pornesc cautarea din punctele de start 
+si caut in jurul lor, cu ajutorul functiei getPos si al unui vector de directii, daca alte celule ale 
+hartii mai contin corpul sarpelui si verific ca, celula pe care care o sa ma mut acum pentru verificare sa 
+nu fi fost deja parcursa. Daca am gasit o celula buna (care are acelasi enconding ca sarepele si nu se 
+afla in directia din care am venit), atunci cautarea se muta pe celula gasita si variabila ce tine cont de 
+unde am venit este schimbata, fiind transformata in opusul directii in care am mers pentru a cauta celula. 
+Daca nu se gaseste o astfel de celula ce sa indeplineasca conditiile, inseamna ca am gasit coada sarpelui, 
+iar functia returneaza coordonatele cozii.
+
+run_simulation: initial calculam si salvam toate cozile serpilor intr-un vector pentru a le modifica mai 
+usor ulterior. Creez o matrice copie a celei pe care o primim pe care se vor face toate modificarile. 
+Pentru numarul de pasi dati, se sterg cozile fiecarui sarpe si se actualizaeaza noua coada (cauta in jurul 
+zonei acutuale celula in care se poate gasi urmatoarea parte a sarpelui pentru a o putea delcara ca fiind 
+noua coada), pentru a exclude situatia in care se poate calca pe propria coada, apoi calculez noua pozitie 
+a capului si verific daca exista coliziune. In cazul in care exista o coliziune, aceasta se va trata mai 
+tarziu, dar in cazul in care zona tinta este libera, valoarea acesteia va fi modificata in codul sarpelui. 
+Dupa ce s-au sters toate cozile si s-au mutat toti serpii pe matricea copie, verificam daca anterior s-a 
+detectat vreo coliziune. In cazul in care nu s-a intamplat nicio coliziune, harta copie va fi copiata in 
+harta ce va fi scrisa in fisier si lista de capete ale serpilor va fi actualizata, iar daca s-a detectat, 
+sarim direct la finalul for-ului pentru a iesi din joc, matricea de afisare ramanand la formatul pasului 
+anterior.
+
+Paralelizarea am realizat-o paralelizand for-urile in care thread-urile puteau lucra independent, marcand 
+anumite variabile ca private pentru a evita suprascrierea. De exemplu in for-ul pentru updatarea cozii, 
+fiecare thread trebuie sa tina cont de variabila ce opreste cautarea cozii in pozitiile adiacente, 
+posibila coada gasita si contorul pentru detectarea pozitiei in care se cauta coada.
+
+Sistemul de testare:
+
+Testarea am realizat-o pe cluster-ul facultatii pe campus-haswell.q
+
+Testarea:
+
+Am rulat codul pe fisierul big_input oferit in resurse de 20k pasi serial, folosind 2, 4, 6 si 8 threaduri 
+pentru a vedea scalabilitatea.
+
+Rezultate:
+
+serial: 454.0076 secunde 
+2 threaduri: 56.6136 secunde
+4 threaduri: 31.8845 secunde
+6 threaduri: 25.8563 secunde
+8 threaduri: 24.2661 secunde
+
+pentru ultimele 2 teste, pe 6 si 8 threaduri am facut mai multe rulari pentru ca diferenta de timp nu se 
+mai observa atat de bine din cauza timpului de deschidere si inchidere al threadurilor ce se apropie de 
+timpul de exectie efectiv al programului.
